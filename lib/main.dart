@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mainproject/list_order.dart';
+import 'package:sidebarx/sidebarx.dart';
 import 'food_menu.dart';
+import 'package:http/http.dart' as http;
+import 'json_parse_exchange_rate.dart';
 
 enum StateNumber { add, remove }
 
@@ -16,6 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "My App",
+      debugShowCheckedModeBanner: false,
       home: const MyHomePage(),
       theme: ThemeData(primarySwatch: Colors.indigo),
     );
@@ -30,33 +34,100 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  ExchangeRate? _dataFromAPI;
+
+  @override
+  void initState() {
+    super.initState();
+    getExchangeRate();
+  }
+
+  Future<ExchangeRate?> getExchangeRate() async {
+    const url =
+        "https://api.apilayer.com/fixer/latest?base=THB&symbols=EUR,USD,THB";
+    const accessToken = "Ft6rpnHvHF51ktK9WdegWz120NP36qcq";
+    var response =
+        await http.get(Uri.parse(url), headers: {"apikey": accessToken});
+    _dataFromAPI = exchangeRateFromJson(response.body);
+    return _dataFromAPI;
+  }
+
+  final _controller = SidebarXController(selectedIndex: 0, extended: true);
+  final _key = GlobalKey<ScaffoldState>();
   //แสดงผลข้อมูล
   @override
   Widget build(BuildContext context) {
+    final isSmallScreen = MediaQuery.of(context).size.width < 600;
+    List<SidebarXItem> itemSidebar = const [
+      SidebarXItem(icon: Icons.menu_book, label: " เมนู"),
+      SidebarXItem(icon: Icons.home, label: " หน้าแรก"),
+    ];
+
+    final sidebar = SidebarX(
+      controller: _controller,
+      items: itemSidebar,
+      extendedTheme: const SidebarXTheme(width: 140),
+    );
+
     return Scaffold(
+      key: _key,
       appBar: AppBar(
-        title: const Text("เมนูอาหาร"),
+        // title: const Text("เมนูอาหาร"),
+        title: const Text("อัตราการแลกเปลี่ยนสกุลเงิน"),
       ),
-      body: const Center(child: ListOrder()),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: FloatingActionButton(
-              onPressed: () => setMenu(StateNumber.add),
-              child: const Icon(Icons.add),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: FloatingActionButton(
-              onPressed: () => setMenu(StateNumber.remove),
-              child: const Icon(Icons.remove),
-            ),
-          ),
-        ],
-      ),
+      drawer: isSmallScreen ? sidebar : null,
+      body: Row(children: [
+        if (!isSmallScreen) sidebar,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [Text("asd")],
+        )
+      ]),
+      // body: const Center(child: ListOrder()),
+      // body: FutureBuilder(
+      //   future: getExchangeRate(),
+      //   builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.done) {
+      //       var result = snapshot.data;
+      //       return ListView(
+      //         children: [
+      //           ListTile(
+      //             title: Text(result.base),
+      //           ),
+      //           ListTile(
+      //             title: Text("${result.date}"),
+      //           ),
+      //           ListTile(
+      //             title: Text(result.rates.thb.toString()),
+      //           ),
+      //           ListTile(
+      //             title: Text(result.rates.usd.toString()),
+      //           ),
+      //         ],
+      //       );
+      //     }
+      //     return const LinearProgressIndicator();
+      //   },
+      // )
+      // floatingActionButton: Row(
+      //   mainAxisAlignment: MainAxisAlignment.end,
+      //   children: [
+      //     Padding(
+      //       padding: const EdgeInsets.all(8),
+      //       child: FloatingActionButton(
+      //         onPressed: () => setMenu(StateNumber.add),
+      //         child: const Icon(Icons.add),
+      //       ),
+      //     ),
+      //     Padding(
+      //       padding: const EdgeInsets.all(8),
+      //       child: FloatingActionButton(
+      //         onPressed: () => setMenu(StateNumber.remove),
+      //         child: const Icon(Icons.remove),
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 
