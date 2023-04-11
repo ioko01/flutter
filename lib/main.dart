@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_card/image_card.dart';
+import 'package:mainproject/card_menu.dart';
 import 'package:mainproject/list_order.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'food_menu.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: const MyHomePage(),
         theme: ThemeData(
-          primarySwatch: Colors.indigo,
+          primarySwatch: Colors.lightGreen,
         ));
   }
 }
@@ -36,23 +37,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  ExchangeRate? _dataFromAPI;
+  // ExchangeRate? _dataFromAPI;
 
   @override
   void initState() {
     super.initState();
-    getExchangeRate();
+    // getExchangeRate();
   }
 
-  Future<ExchangeRate?> getExchangeRate() async {
-    const url =
-        "https://api.apilayer.com/fixer/latest?base=THB&symbols=EUR,USD,THB";
-    const accessToken = "Ft6rpnHvHF51ktK9WdegWz120NP36qcq";
-    var response =
-        await http.get(Uri.parse(url), headers: {"apikey": accessToken});
-    _dataFromAPI = exchangeRateFromJson(response.body);
-    return _dataFromAPI;
-  }
+  // Future<ExchangeRate?> getExchangeRate() async {
+  //   const url =
+  //       "https://api.apilayer.com/fixer/latest?base=THB&symbols=EUR,USD,THB";
+  //   const accessToken = "Ft6rpnHvHF51ktK9WdegWz120NP36qcq";
+  //   var response =
+  //       await http.get(Uri.parse(url), headers: {"apikey": accessToken});
+  //   _dataFromAPI = exchangeRateFromJson(response.body);
+  //   return _dataFromAPI;
+  // }
 
   final _controller = SidebarXController(selectedIndex: 0, extended: true);
   final _key = GlobalKey<ScaffoldState>();
@@ -76,36 +77,22 @@ class _MyHomePageState extends State<MyHomePage> {
       key: _key,
       appBar: AppBar(
         // title: const Text("เมนูอาหาร"),
-        title: const Text("อัตราการแลกเปลี่ยนสกุลเงิน"),
+        title: const Text(
+          "ฉ่ำชา สาขากุดป่อง",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       drawer: isSmallScreen ? sidebar : null,
       body: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         if (!isSmallScreen) sidebar,
         Padding(
-          padding: const EdgeInsets.all(15),
-          child: Container(
-            decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  spreadRadius: 0)
-            ]),
+            padding: const EdgeInsets.all(15),
             child: Row(
-              children: const [
-                Padding(
-                  padding: EdgeInsets.all(5),
-                  child: FillImageCard(
-                    width: 200,
-                    imageProvider: AssetImage("images/3.jpg"),
-                    tags: [Text("cate")],
-                    title: Text("data"),
-                    description: Text("data1"),
-                  ),
-                ),
+              children: [
+                CardMenu(name: "กุ้งเผา", price: 50, category: "Category"),
+                CardMenu(name: "กุ้งเเต้น", price: 50, category: "Category")
               ],
-            ),
-          ),
-        )
+            ))
       ]),
       // body: const Center(child: ListOrder()),
       // body: FutureBuilder(
