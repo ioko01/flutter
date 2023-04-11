@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_card/image_card.dart';
 import 'package:mainproject/list_order.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'food_menu.dart';
@@ -18,11 +19,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "My App",
-      debugShowCheckedModeBanner: false,
-      home: const MyHomePage(),
-      theme: ThemeData(primarySwatch: Colors.indigo),
-    );
+        title: "My App",
+        debugShowCheckedModeBanner: false,
+        home: const MyHomePage(),
+        theme: ThemeData(
+          primarySwatch: Colors.indigo,
+        ));
   }
 }
 
@@ -70,17 +72,39 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       key: _key,
       appBar: AppBar(
         // title: const Text("เมนูอาหาร"),
         title: const Text("อัตราการแลกเปลี่ยนสกุลเงิน"),
       ),
       drawer: isSmallScreen ? sidebar : null,
-      body: Row(children: [
+      body: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         if (!isSmallScreen) sidebar,
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [Text("asd")],
+        Padding(
+          padding: const EdgeInsets.all(15),
+          child: Container(
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 20,
+                  spreadRadius: 0)
+            ]),
+            child: Row(
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: FillImageCard(
+                    width: 200,
+                    imageProvider: AssetImage("images/3.jpg"),
+                    tags: [Text("cate")],
+                    title: Text("data"),
+                    description: Text("data1"),
+                  ),
+                ),
+              ],
+            ),
+          ),
         )
       ]),
       // body: const Center(child: ListOrder()),
