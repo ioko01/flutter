@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:image_card/image_card.dart';
-import 'package:mainproject/card_menu.dart';
+import 'package:mainproject/cards/card_menu.dart';
 import 'package:mainproject/list_order.dart';
+import 'package:mainproject/sidebar/sidebar_menu.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'food_menu.dart';
 import 'package:http/http.dart' as http;
-import 'json_parse_exchange_rate.dart';
+import 'json_parse/json_parse_exchange_rate.dart';
 
 enum StateNumber { add, remove }
+
+var primarySwatch = Colors.lightGreen;
+var themeColor = const Color(0xFF8BC34A);
+var textColorLight = Colors.white;
+var textColorDark = Colors.black;
+var textColorPrimary = const Color(0xFF8BC34A);
+double sidebarWidth = 150;
 
 void main(List<String> args) {
   const app = MyApp();
@@ -20,12 +28,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "My App",
-        debugShowCheckedModeBanner: false,
-        home: const MyHomePage(),
-        theme: ThemeData(
-          primarySwatch: Colors.lightGreen,
-        ));
+      title: "My App",
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(),
+      theme: ThemeData(
+        primarySwatch: primarySwatch,
+        fontFamily: "FC Minimal",
+      ),
+    );
   }
 }
 
@@ -55,46 +65,54 @@ class _MyHomePageState extends State<MyHomePage> {
   //   return _dataFromAPI;
   // }
 
-  final _controller = SidebarXController(selectedIndex: 0, extended: true);
   final _key = GlobalKey<ScaffoldState>();
   //แสดงผลข้อมูล
   @override
   Widget build(BuildContext context) {
     final isSmallScreen = MediaQuery.of(context).size.width < 600;
-    List<SidebarXItem> itemSidebar = const [
-      SidebarXItem(icon: Icons.menu_book, label: " เมนู"),
-      SidebarXItem(icon: Icons.home, label: " หน้าแรก"),
-    ];
-
-    final sidebar = SidebarX(
-      controller: _controller,
-      items: itemSidebar,
-      extendedTheme: const SidebarXTheme(width: 140),
-    );
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       key: _key,
       appBar: AppBar(
         // title: const Text("เมนูอาหาร"),
-        title: const Text(
-          "ฉ่ำชา สาขากุดป่อง",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: !isSmallScreen
+            ? const Text(
+                "ฉ่ำชา สาขากุดป่อง",
+                style: TextStyle(color: Colors.white),
+              )
+            : null,
       ),
-      drawer: isSmallScreen ? sidebar : null,
-      body: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        if (!isSmallScreen) sidebar,
-        Padding(
-            padding: const EdgeInsets.all(15),
-            child: Row(
+      drawer: isSmallScreen ? const SidebarMenu() : null,
+      body: Row(mainAxisSize: MainAxisSize.min, children: [
+        if (!isSmallScreen) const SidebarMenu(),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+            child: ListView(
               children: [
-                CardMenu(name: "กุ้งเผา", price: 50, category: "Category"),
-                CardMenu(name: "กุ้งเเต้น", price: 50, category: "Category")
+                Center(
+                  child: Wrap(
+                    direction: Axis.horizontal,
+                    children: List.generate(10, (index) {
+                      double cardSized =
+                          MediaQuery.of(context).size.width / 10 > sidebarWidth
+                              ? MediaQuery.of(context).size.width / 10
+                              : sidebarWidth;
+                          
+                      return CardMenu(
+                          width: cardSized,
+                          name: "กุ้งแห้ง",
+                          price: 50,
+                          category: "category");
+                    }),
+                  ),
+                )
               ],
-            ))
+            ),
+          ),
+        ),
       ]),
-      // body: const Center(child: ListOrder()),
       // body: FutureBuilder(
       //   future: getExchangeRate(),
       //   builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
@@ -143,36 +161,36 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // เตรียมข้อมูล
-  List<Widget> getData(int count) {
-    List<Widget> data = [];
-    for (var i = 0; i < count; i++) {
-      // var menu = Text(
-      //   "รายการที่ ${i + 1}",
-      //   style: const TextStyle(fontSize: 40),
-      // );
-      var menu = ListTile(
-        title: Text(
-          "รายการที่ ${i + 1}",
-          style: const TextStyle(fontSize: 20),
-        ),
-        subtitle: Text("หัวข้อย่อยที่ ${i + 1}"),
-      );
+  // List<Widget> getData(int count) {
+  //   List<Widget> data = [];
+  //   for (var i = 0; i < count; i++) {
+  //     // var menu = Text(
+  //     //   "รายการที่ ${i + 1}",
+  //     //   style: const TextStyle(fontSize: 40),
+  //     // );
+  //     var menu = ListTile(
+  //       title: Text(
+  //         "รายการที่ ${i + 1}",
+  //         style: const TextStyle(fontSize: 20),
+  //       ),
+  //       subtitle: Text("หัวข้อย่อยที่ ${i + 1}"),
+  //     );
 
-      data.add(menu);
-    }
+  //     data.add(menu);
+  //   }
 
-    // data.add(const Text("กดปุ่มเพื่อเพิ่มจำนวนตัวเลข"));
-    // data.add(
-    //   Text(
-    //     "$_menu",
-    //     style: const TextStyle(fontSize: 60),
-    //   ),
-    // );
+  //   // data.add(const Text("กดปุ่มเพื่อเพิ่มจำนวนตัวเลข"));
+  //   // data.add(
+  //   //   Text(
+  //   //     "$_menu",
+  //   //     style: const TextStyle(fontSize: 60),
+  //   //   ),
+  //   // );
 
-    return data;
-  }
+  //   return data;
+  // }
 
-  setMenu(StateNumber state) {
-    setState(() {});
-  }
+  // setMenu(StateNumber state) {
+  //   setState(() {});
+  // }
 }

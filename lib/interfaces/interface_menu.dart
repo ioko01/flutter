@@ -1,7 +1,7 @@
 class IMenu {
   String name;
   String? description;
-  String price;
+  double price;
   String? detail;
   String category;
   String? image;
